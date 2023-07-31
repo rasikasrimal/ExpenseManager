@@ -1,2 +1,2 @@
-# Expense anager
+# Expense Manager
 
