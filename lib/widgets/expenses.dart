@@ -1,5 +1,6 @@
 import 'package:expense_manager/widgets/expenses-list/expenses_list.dart';
 import 'package:expense_manager/models/expense.dart';
+import 'package:expense_manager/widgets/new_expense.dart';
 import 'package:flutter/material.dart';
 
 class Expenses extends StatefulWidget {
@@ -25,13 +26,18 @@ class _ExpensesState extends State<Expenses> {
         catoegory: Category.Leisure),
   ];
 
+  void _openAddExpenseOverlay() {
+    showModalBottomSheet(
+        context: context, builder: (ctx) => const NewExpense());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: _openAddExpenseOverlay,
             icon: const Icon(Icons.add),
           )
         ],
