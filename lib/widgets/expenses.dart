@@ -14,27 +14,71 @@ class Expenses extends StatefulWidget {
 
 class _ExpensesState extends State<Expenses> {
   final List<Expense> _registeredExpenses = [
-    Expense(
-        title: 'Groceries',
-        amount: 100.00,
-        date: DateTime.now(),
-        catoegory: Category.Food),
-    Expense(
-        title: 'Cinema',
-        amount: 100.00,
-        date: DateTime.now(),
-        catoegory: Category.Leisure),
+    // Expense(
+    //     title: 'Groceries',
+    //     amount: 100.00,
+    //     date: DateTime.now(),
+    //     catoegory: Category.Food),
+    // Expense(
+    //     title: 'Cinema',
+    //     amount: 100.00,
+    //     date: DateTime.now(),
+    //     catoegory: Category.Leisure),
   ];
 
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
-        context: context, builder: (ctx) => const NewExpense());
+        isScrollControlled: true,
+        context: context,
+        builder: (ctx) => NewExpense(onAddExpense: _addExpense));
   }
 
+//
+//
+  void _addExpense(Expense expense) {
+    setState(() {
+      _registeredExpenses.add(expense);
+    });
+  }
+
+//
+//
+  void _removeExpense(Expense expense) {
+    final expenseIndex = _registeredExpenses.indexOf(expense);
+    setState(() {
+      _registeredExpenses.remove(expense);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('${expense.title} removed'),
+      duration: const Duration(seconds: 2),
+      action: SnackBarAction(
+        label: 'Undo',
+        onPressed: () {
+          setState(() {
+            _registeredExpenses.insert(expenseIndex, expense);
+          });
+        },
+      ),
+    ));
+  }
+
+//
+//
   @override
   Widget build(BuildContext context) {
+    Widget mainContent = const Center(
+      child: Text('No expenses found. Start adding Some!'),
+    );
+
+    if (_registeredExpenses.isNotEmpty) {
+      mainContent = ExpenseList(
+        expenses: _registeredExpenses,
+        onRemoveExpense: _removeExpense,
+      );
+    }
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Expense Manager'),
         actions: [
           IconButton(
             onPressed: _openAddExpenseOverlay,
@@ -42,10 +86,14 @@ class _ExpensesState extends State<Expenses> {
           )
         ],
       ),
-      body: Column(children: [
-        const Text('The Chart'),
-        Expanded(child: ExpenseList(expenses: _registeredExpenses))
-      ]),
+      body: Column(
+        children: [
+          const Text('The Chart'),
+          Expanded(
+            child: mainContent,
+          ),
+        ],
+      ),
     );
   }
 }
